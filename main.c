@@ -1,58 +1,103 @@
-/*
-  Trabalho Avaliativo - Estrutura de dados 1 - UFPR
-  Equipe: Diego Lemos e Jean de Jesus
-  Projeto Fila
-*/
+#include<stdio.h>
+#include<stdlib.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-typedef struct Lista_Encadeada
+// Definição da Estrutura Lista Linear Simplemente Encadeada
+typedef struct Bloco
 {
-     int expressao;
-     struct Lista_Encadeada *prox;
-}pilha;
+char expressao;
+struct Bloco *prox;
+} Pilha;
 
-// Método que inicializa a lista
-void inicializa_lista(pilha *N)
-  {
-    N = NULL;
-  }
-
-// Método que aloca memória para o lista
-ListaLinear Cria_lista()
+void inicializa_lista(Pilha **N)//inicializa a lista
 {
-  ListaLinear *L ;
-  L = (ListaLinear*) malloc(sizeof(ListaLinear));
-  if(!L)
-  {
-    printf("Problema de alocação!");
-    exit(0);
-  }
-  return L ;
+*N = NULL;
 }
 
+
+Pilha * Cria_Pilha() //aloca memória para o Pilha
+{
+  Pilha *p;
+  p = (Pilha *) malloc(sizeof(Pilha));
+  if(!p) {
+    printf("Problema de alocação");
+    exit(0);
+  }
+return p;
+}
+
+void push(Pilha **N, char expressao) {
+  Pilha *novo;
+  novo = Cria_Pilha();
+  novo->expressao = expressao;
+  novo->prox = *N;
+  *N = novo;
+}
+
+int pop(Pilha **N, char *expressao) {
+  Pilha *aux;
+  if(*N == NULL) //verifica se a lista está vazia
+    return 0;
+    else {
+      *expressao = (*N)->expressao;
+      aux = (*N)->prox;
+      free(*N);
+      *N = aux;
+    }
+  return 1;
+}
+
+
+int busca_lista(Pilha **N, char *expressao){
+  Pilha *aux;
+  if (*N == NULL) {
+    return 0;
+    printf("Lista vazia !!!\n");
+  } else {
+    aux = *N;
+      while(aux != NULL){
+        if (aux->expressao == *expressao)
+          return 1;
+        else
+          aux = aux->prox;
+     }
+     return 0;
+  }
+}
+
+
+void imprime_lista_ecandeada(Pilha *N) {
+  Pilha *aux;
+  if(N == NULL)
+    printf("\n A lista está vazia!!");
+  else {
+    for(aux = N; aux != NULL; aux = aux->prox)
+      printf("\n%d", aux->expressao);
+    }
+}
+
+char Infixa_Posfixa(char expressao, Pilha *p);
+char expressao();
 void menuop();
-
-void insere_inicio_lista(Nodo **N, int dado)
-int remove_inicio_lista(Nodo **N, int *dado)
-
 int main ()
 {
-     ListaLinear *Lista;
-
+     Pilha *Lista;
+     int menu,n=0;
      inicializa_lista(&Lista);
+     char op;
 
      do
      {
+        printf("entre com expressão\n");
+          scanf("%s\n", op );
          menuop();// apenas mostrar as opções
          setbuf(stdin,NULL);
          scanf("%d", &menu);
 
+
         switch(menu)
         {
               case 1:
+                Infixa_Posfixa(op,Lista);
               break;
               case 2 :
 
@@ -69,6 +114,7 @@ int main ()
          }
     }while(menu != 5);
     return 1;
+    free(Lista);
  }
 
  void menuop(){
@@ -79,27 +125,8 @@ int main ()
    printf("\n5. Sair do Programa: ");
  }
 
- void insere_inicio_lista(Nodo **N, int dado)
-{
-   Nodo *novo;
-   novo = Cria_Nodo();
-   novo->dado = dado;
-   novo->prox = *N;
-   *N = novo;
-}
+ char Infixa_Posfixa(char expressao, Pilha *p){
+   printf("%s\n",expressao);
+ }
 
-int remove_inicio_lista(Nodo **N, int *dado)
-{
-   Nodo *aux;
-   if(*N == NULL) //verifica se a lista está vazia
-   return 0;
- else
-  {
-     *dado = (*N)->dado;
-     aux = (*N)->prox;
-     free(*N);
-     *N = aux;
-   }
- return 1;
-}
 
