@@ -1,16 +1,15 @@
 #include<stdio.h>
 #include<stdlib.h>
-
 // Definição da Estrutura Lista Linear Simplemente Encadeada
 typedef struct Bloco
 {
-char expressao;
+char dado;
 struct Bloco *prox;
-} Pilha;
+}   Pilha;
 
-void inicializa_lista(Pilha **N)//inicializa a lista
+void inicializa_lista(Pilha **topo)//inicializa a lista
 {
-*N = NULL;
+*topo = NULL;
 }
 
 
@@ -25,20 +24,20 @@ Pilha * Cria_Pilha() //aloca memória para o Pilha
 return p;
 }
 
-void push(Pilha **N, char expressao) {
+void push(Pilha **N, char dado) {
   Pilha *novo;
   novo = Cria_Pilha();
-  novo->expressao = expressao;
+  novo->dado = dado;
   novo->prox = *N;
   *N = novo;
 }
 
-int pop(Pilha **N, char *expressao) {
+int pop(Pilha **N, char *dado) {
   Pilha *aux;
   if(*N == NULL) //verifica se a lista está vazia
     return 0;
     else {
-      *expressao = (*N)->expressao;
+      *dado = (*N)->dado;
       aux = (*N)->prox;
       free(*N);
       *N = aux;
@@ -47,7 +46,7 @@ int pop(Pilha **N, char *expressao) {
 }
 
 
-int busca_lista(Pilha **N, char *expressao){
+int busca_lista(Pilha **N, char *dado){
   Pilha *aux;
   if (*N == NULL) {
     return 0;
@@ -55,7 +54,7 @@ int busca_lista(Pilha **N, char *expressao){
   } else {
     aux = *N;
       while(aux != NULL){
-        if (aux->expressao == *expressao)
+        if (aux->dado == *dado)
           return 1;
         else
           aux = aux->prox;
@@ -65,30 +64,36 @@ int busca_lista(Pilha **N, char *expressao){
 }
 
 
-void imprime_lista_ecandeada(Pilha *N) {
+char imprime_lista_ecandeada(Pilha *N) {
   Pilha *aux;
   if(N == NULL)
     printf("\n A lista está vazia!!");
   else {
     for(aux = N; aux != NULL; aux = aux->prox)
-      printf("\n%d", aux->expressao);
+      printf("\n%d", aux->dado);
     }
 }
 
-char Infixa_Posfixa(char expressao, Pilha *p);
-char expressao();
+char Infixa_Posfixa(char dado[], Pilha *p);
 void menuop();
 int main ()
 {
      Pilha *Lista;
      int menu,n=0;
+     char op[40];
      inicializa_lista(&Lista);
-     char op;
+     int i=0;
+     char caractere;
+        printf("entre com expressão");
+        do{
+            setbuf(stdin,NULL);
+            caractere = getchar();
+            op[i]= caractere;
+            i++;
+        }while(caractere != '\n');
 
      do
      {
-        printf("entre com expressão\n");
-          scanf("%s\n", op );
          menuop();// apenas mostrar as opções
          setbuf(stdin,NULL);
          scanf("%d", &menu);
@@ -97,7 +102,8 @@ int main ()
         switch(menu)
         {
               case 1:
-                Infixa_Posfixa(op,Lista);
+
+             Infixa_Posfixa(op,&Lista);
               break;
               case 2 :
 
@@ -125,8 +131,20 @@ int main ()
    printf("\n5. Sair do Programa: ");
  }
 
- char Infixa_Posfixa(char expressao, Pilha *p){
-   printf("%s\n",expressao);
- }
+ char Infixa_Posfixa(char dado[], Pilha *p){
+        char item ;
+        
+        int i=0;
+       do{
+        item = dado[i];
+        i++;
+        if(item == '(')
+            push(p,'(');
+        if(item == ')')
+            do{
+                pop(p,item);
+            }while(item =='(');
 
+        }while(item != '\0');
+     }
 
