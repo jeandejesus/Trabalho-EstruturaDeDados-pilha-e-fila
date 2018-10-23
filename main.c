@@ -5,7 +5,7 @@ typedef struct Bloco
 {
 char dado;
 struct Bloco *prox;
-}   Pilha;
+}  Pilha;
 
 void inicializa_lista(Pilha **topo)//inicializa a lista
 {
@@ -74,8 +74,9 @@ char imprime_lista_ecandeada(Pilha *N) {
     }
 }
 
-char Infixa_Posfixa(char dado[], Pilha *p);
+char Infixa_Posfixa(char dado[], Pilha **p);
 void menuop();
+int Prioridade(char c, char t);
 int main ()
 {
      Pilha *Lista;
@@ -131,20 +132,71 @@ int main ()
    printf("\n5. Sair do Programa: ");
  }
 
- char Infixa_Posfixa(char dado[], Pilha *p){
+ char Infixa_Posfixa(char dado[], Pilha **p){
         char item ;
-        
+        int t;
+        char ret;
         int i=0;
+        push(p,'(');
        do{
         item = dado[i];
         i++;
-        if(item == '(')
-            push(p,'(');
-        if(item == ')')
+       if(item >= 'a' && item <= 'z'){
+              printf("%c", item);
+        }
+      else if(item == '(')
+             push(p,'(');
+      else if(item == ')' || '\0'){
             do{
-                pop(p,item);
-            }while(item =='(');
+              t = pop(p,&ret);
+              if(ret != '(');
+              printf("%c\n",ret );
+            }while(item !='(');
+          }else if(item == '+' || item == '-' ||
+            item == '*' || item == '/' ||
+            item == '^' ){
+      while(1){
+        t = pop(p,&ret);
+        if(t == 0 ){
+          printf("Lista vazia");
+          break;
+        }else{
+        if(Prioridade(item,ret)){
+          push(p, ret);
+          push(p, item);
+          break;
+        }
+        else{
+          printf("%c", ret);
+        }
+      }
+      }
+    }
 
         }while(item != '\0');
      }
+
+int Prioridade(char c, char t){
+  int pc,pt;
+
+  if(c == '^')
+    pc = 4;
+  else if(c == '*' || c == '/')
+    pc = 2;
+  else if(c == '+' || c == '-')
+    pc = 1;
+  else if(c == '(')
+    pc = 4;
+
+  if(t == '^')
+    pt = 3;
+  else if(t == '*' || t == '/')
+    pt = 2;
+  else if(t == '+' || t == '-')
+    pt = 1;
+  else if(t == '(')
+    pt = 0;
+
+  return (pc > pt);
+}
 
