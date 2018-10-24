@@ -45,35 +45,18 @@ int pop(Pilha **N, char *dado) {
   return 1;
 }
 
-
-int busca_lista(Pilha **N, char *dado){
-  Pilha *aux;
-  if (*N == NULL) {
-    return 0;
-    printf("Lista vazia !!!\n");
-  } else {
-    aux = *N;
-      while(aux != NULL){
-        if (aux->dado == *dado)
-          return 1;
-        else
-          aux = aux->prox;
-     }
-     return 0;
-  }
-}
-
-
-char imprime_lista_ecandeada(Pilha *N) {
+void imprime_lista_ecandeada(Pilha *N) {
+  printf("entrei na função imprime_lista_ecandeada\n" );
   Pilha *aux;
   if(N == NULL)
     printf("\n A lista está vazia!!");
   else {
     for(aux = N; aux != NULL; aux = aux->prox)
-      printf("\n%d", aux->dado);
+      printf("\n fila : %c ", aux->dado);
     }
 }
 
+char Infixa_Prefixa(char dado[], Pilha **p);
 char Infixa_Posfixa(char dado[], Pilha **p);
 void menuop();
 int Prioridade(char c, char t);
@@ -104,9 +87,11 @@ int main ()
         {
               case 1:
 
-             Infixa_Posfixa(op,&Lista);
+              Infixa_Posfixa(op,&Lista);
+
               break;
               case 2 :
+              Infixa_Posfixa(op,&Lista);
 
               break;
               case 3 :
@@ -133,49 +118,121 @@ int main ()
  }
 
  char Infixa_Posfixa(char dado[], Pilha **p){
-        char item ;
-        int t;
-        char ret;
-        int i=0;
-        push(p,'(');
-       do{
+      char item ;
+      int t;
+      char ret;
+      int controle=1;
+      int i=0;
+      push(p,'(');
+       do
+       {
         item = dado[i];
         i++;
-       if(item >= 'a' && item <= 'z'){
-              printf("%c", item);
+       if(item >= 'a' && item <= 'z')
+       {
+            printf("%c", item);
         }
       else if(item == '(')
-             push(p,'(');
-      else if(item == ')' || '\0'){
-            do{
-              t = pop(p,&ret);
-              if(ret != '(');
-              printf("%c\n",ret );
-            }while(item !='(');
-          }else if(item == '+' || item == '-' ||
-            item == '*' || item == '/' ||
-            item == '^' ){
-      while(1){
-        t = pop(p,&ret);
-        if(t == 0 ){
-          printf("Lista vazia");
-          break;
-        }else{
-        if(Prioridade(item,ret)){
-          push(p, ret);
-          push(p, item);
-          break;
-        }
-        else{
-          printf("%c", ret);
-        }
-      }
-      }
-    }
+            push(p,'(');
+      else if(item == ')' || '\0')
+      {
+        do{
+          t = pop(p,&ret);
+            if(t == 0)
+              printf("Lista vazia\n" );
+              else if(ret != '(');
+              printf("%c\n", ret);
+          }while(item !='(');
 
-        }while(item != '\0');
+      }else if(item == '+' || item == '-' ||  item == '*' || item == '/' ||  item == '^' )
+      {
+      while(controle)
+      {
+          t = pop(p,&ret);
+
+          if(t == 0 )
+          {
+            printf("Lista vazia");
+            controle =0;
+          }else
+          {
+          if(Prioridade(item,ret))
+            {
+
+              push(p,ret);
+              push(p,item);
+              printf("%c\n",ret );
+              printf("%c\n",item);
+              break;
+            }
+        if(Prioridade(item,ret)){
+              printf("%s\n",ret);
+
+            }
+
+          }
+        }
+      }
+
+
+    }while(item != '\0');
+}
+
+char Infixa_Prefixa(char dado[], Pilha **p){
+     char item ;
+     int t;
+     char ret;
+     int i=0;
+     push(p,'(');
+      do
+      {
+       item = dado[i];
+       i++;
+       if(item == '+' || item == '-' ||  item == '*' || item == '/' ||  item == '^' )
+       {
+       while(1)
+       {
+           t = pop(p,&ret);
+
+           if(t == 0 )
+           {
+             printf("Lista vazia");
+             break;
+           }else
+           {
+             if(Prioridade(item,ret))
+             {
+               push(p,ret);
+               push(p,item);
+               break;
+             }
+
+             printf("%c", ret);
+
+           }
+
+       }
+     }
+    else if(item >= 'a' && item <= 'z')
+      {
+           printf("%c", item);
+       }
+     else if(item == '(')
+           push(p,'(');
+     else if(item == ')' || '\0')
+     {
+       do{
+         t = pop(p,&ret);
+           if(t == 0)
+             printf("Lista vazia\n" );
+             else if(ret != '(');
+             printf("%c\n", ret);
+         }while(item !='(');
+
      }
 
+   }while(item != '\0');
+}
 int Prioridade(char c, char t){
   int pc,pt;
 
@@ -199,4 +256,3 @@ int Prioridade(char c, char t){
 
   return (pc > pt);
 }
-
