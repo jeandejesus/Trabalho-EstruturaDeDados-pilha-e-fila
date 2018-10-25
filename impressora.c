@@ -1,11 +1,11 @@
 #include<stdio.h>
 #include<stdlib.h>
-#include <unistd.h>
+
 // Definição da Estrutura Lista Linear Simplemente Encadeada
   typedef struct Bloco
 {
+char ip;
 int prioridade;
-int ip;
 struct Bloco *prox;
 } Nodo;
 
@@ -27,7 +27,7 @@ return p;
 }
 
 
-void push(Nodo **N, int ip , int prioridade) {
+void insere_fim_lista(Nodo **N, char ip , int prioridade) {
   Nodo *novo, * aux, * aux2;
   novo = Cria_Nodo( );
   novo->ip = ip;
@@ -44,14 +44,13 @@ void push(Nodo **N, int ip , int prioridade) {
 }
 
 
-int pop(Nodo **N,int *ip, int *prioridade) {
+int remove_inicio_lista(Nodo **N,char *ip, int *prioridade) {
   Nodo *aux;
   if(*N == NULL) //verifica se a lista está vazia
     return 0;
     else {
-
-     *prioridade = (*N)->prioridade;
-     *ip = (*N)->ip;
+      *ip = (*N)->ip;
+      *prioridade = (*N)->prioridade;
       aux = (*N)->prox;
       free(*N);
       *N = aux;
@@ -59,7 +58,7 @@ int pop(Nodo **N,int *ip, int *prioridade) {
   return 1;
 }
 
-int busca_lista(Nodo **N, char *ip ,int *prioridade){
+int busca_lista(Nodo **N, int *ip ,char *prioridade){
   Nodo *aux;
   if (*N == NULL) {
     return 0;
@@ -76,16 +75,13 @@ int busca_lista(Nodo **N, char *ip ,int *prioridade){
   }
 }
 void imprime_lista_ecandeada(Nodo *N) {
-
+  printf("entrei na função imprime_lista_ecandeada\n" );
   Nodo *aux;
   if(N == NULL)
-    printf("\n NÃO HÁ ARQUIVOS ");
+    printf("\n A lista está vazia!!");
   else {
-
     for(aux = N; aux != NULL; aux = aux->prox)
-
-      printf("\n  prioridade %d ip : %d",aux->prioridade, aux->ip);
-
+      printf("\n ip : %s prioridade %d ", aux->ip,aux->prioridade);
     }
 }
 
@@ -95,10 +91,8 @@ int main(){
   int valor;
   FILE *file;
   int prioridade;
-  int  ip;
-  int ret=0;
-  int identficacao;
-  int p,dis=0;
+  char  ip[50];
+
   inicializa_lista(&FilaEntrada);
   inicializa_lista(&Fila0);
   inicializa_lista(&Fila1);
@@ -111,43 +105,28 @@ int main(){
     system("pause");
     return 0 ;
   }else{
-    while( (fscanf(file,"%d %d ", &prioridade, &ip))!=EOF ){
-        printf("prioridade : %d ,ip :  %d\n", prioridade , ip);
-        push(&FilaEntrada,ip,prioridade);
+    while( (fscanf(file,"%d %s ", &prioridade, ip))!=EOF ){
+        printf("prioridade : %d ,ip :  %s\n", prioridade , ip);
+        insere_fim_lista(&FilaEntrada,*ip,prioridade);
       }
-  printf("aberto com sucesso\n");
+  printf("aberto com sucesso\n");;
 }
+  /*while( (fscanf(file,"%d %s ", &prioridade, ip))!=EOF ){
+  busca_lista(&FilaEntrada,&ip,&prioridade);
+    switch(prioridade) {
+        case 1:
+            insere_fim_lista(Fila0,ip,prioridade);
+          break;
+        case 2 :
+            insere_fim_lista(Fila1,ip,prioridade);
+          break;
+        case 3 :
+            insere_fim_lista(Fila2,ip,prioridade);
+        break;
+      return 1;
+    }
+  }*/
 
   imprime_lista_ecandeada(FilaEntrada);
-
-  while ( pop(&FilaEntrada,&identficacao,&p) != 0) {
-    if (p ==1 ) {
-      push(&Fila0,identficacao,p);
-
-    }else if(p==2){
-      push(&Fila1,identficacao,p);
-    }else if(p==3){
-      push(&Fila2,identficacao,p);
-    }
-
-  }
-
-    printf("\nFILA 0 - Prioridade maxima \n" );
-    sleep(5);
-    imprime_lista_ecandeada(Fila0);
-    sleep(5);
-    printf("\nFILA 1 - Prioridade normal \n" );
-    sleep(5);
-    imprime_lista_ecandeada(Fila1);
-    printf("\nFILA 2 - Prioridade baixa \n" );
-    sleep(5);
-    imprime_lista_ecandeada(Fila2);
-    sleep(5);
-    printf("\nEntra :" );
-    imprime_lista_ecandeada(FilaEntrada);
-
-
-
     fclose(file);
-    free(FilaEntrada);
 }

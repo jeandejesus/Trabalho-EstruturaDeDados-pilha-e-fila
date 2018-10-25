@@ -3,15 +3,14 @@
 // Definição da Estrutura Lista Linear Simplemente Encadeada
 typedef struct Bloco
 {
-char dado;
-struct Bloco *prox;
+  char dado;
+  struct Bloco *prox;
 }  Pilha;
 
 void inicializa_lista(Pilha **topo)//inicializa a lista
 {
-*topo = NULL;
+  *topo = NULL;
 }
-
 
 Pilha * Cria_Pilha() //aloca memória para o Pilha
 {
@@ -21,7 +20,8 @@ Pilha * Cria_Pilha() //aloca memória para o Pilha
     printf("Problema de alocação");
     exit(0);
   }
-return p;
+
+  return p;
 }
 
 void push(Pilha **N, char dado) {
@@ -59,7 +59,7 @@ void imprime_lista_ecandeada(Pilha *N) {
 char Infixa_Prefixa(char dado[], Pilha **p);
 char Infixa_Posfixa(char dado[], Pilha **p);
 void menuop();
-int Prioridade(char c, char t);
+int prioridade(char c, char t);
 int main ()
 {
      Pilha *Lista;
@@ -68,7 +68,7 @@ int main ()
      inicializa_lista(&Lista);
      int i=0;
      char caractere;
-        printf("entre com expressão");
+        printf("Digite a expressão:");
         do{
             setbuf(stdin,NULL);
             caractere = getchar();
@@ -82,17 +82,13 @@ int main ()
          setbuf(stdin,NULL);
          scanf("%d", &menu);
 
-
         switch(menu)
         {
               case 1:
-
-              Infixa_Posfixa(op,&Lista);
-
+                Infixa_Posfixa(op,&Lista);
               break;
               case 2 :
-              Infixa_Posfixa(op,&Lista);
-
+                Infixa_Posfixa(op,&Lista);
               break;
               case 3 :
 
@@ -130,43 +126,37 @@ int main ()
         i++;
        if(item >= 'a' && item <= 'z')
        {
-            printf("%c", item);
-        }
-      else if(item == '(')
+          printf("%c", item);
+       }  else if(item == '(')
           {
             push(p,'(');
-          }
-      else if(item == ')' || item == '\0')
-      {
-        do{
-          t = pop(p,&ret);
-          if(ret != '(')
+          } else if(item == ')' || item == '\0')
             {
-              printf("%c", ret);
-
-            }
-          }while(ret !='(');
-
+                do{
+                    t = pop(p,&ret);
+                    if(ret != '(')
+                    {
+                      printf("%c", ret);
+                    }
+                }while(ret !='(');
       }else if(item == '+' || item == '-' ||  item == '*' || item == '/' ||  item == '^' )
       {
         int fim = 0;
         do {
           t = pop(p,&ret);
-          if(Prioridade(item,ret))
-            {
-              push(p,ret);
-              push(p,item);
+          if(prioridade(item,ret))
+          {
+            push(p,ret);
+            push(p,item);
               fim =1;
             }else {
               printf("%c",ret );
-      
             }
           }while (!fim);
       }
     }while(item != '\0');
     printf("\n" );
 }
-
 
 char Infixa_Prefixa(char dado[], Pilha **p){
      char item ;
@@ -176,54 +166,47 @@ char Infixa_Prefixa(char dado[], Pilha **p){
      push(p,'(');
       do
       {
-       item = dado[i];
-       i++;
-       if(item == '+' || item == '-' ||  item == '*' || item == '/' ||  item == '^' )
-       {
-       while(1)
-       {
-           t = pop(p,&ret);
-
-           if(t == 0 )
+           item = dado[i];
+           i++;
+           if(item == '+' || item == '-' ||  item == '*' || item == '/' ||  item == '^' )
            {
-             printf("Lista vazia");
-             break;
-           }else
-           {
-             if(Prioridade(item,ret))
-             {
-               push(p,ret);
-               push(p,item);
-               break;
-             }
-
-             printf("%c", ret);
-
-           }
-
-       }
-     }
-    else if(item >= 'a' && item <= 'z')
-      {
-           printf("%c", item);
-       }
-     else if(item == '(')
+               while(1)
+               {
+                   t = pop(p,&ret);
+                   if(t == 0 )
+                   {
+                     printf("Lista vazia");
+                     break;
+                   }else {
+                     if(prioridade(item,ret))
+                     {
+                       push(p,ret);
+                       push(p,item);
+                       break;
+                     }
+                     printf("%c", ret);
+                   }
+               }
+         }
+         else if(item >= 'a' && item <= 'z')
+         {
+            printf("%c", item);
+         } else if(item == '('){
            push(p,'(');
-     else if(item == ')' || '\0')
-     {
-       do{
-         t = pop(p,&ret);
-           if(t == 0)
-             printf("Lista vazia\n" );
-             else if(ret != '(');
-             printf("%c\n", ret);
-         }while(item !='(');
-
-     }
-
-   }while(item != '\0');
+         } else if(item == ')' || '\0')
+           {
+             do{
+               t = pop(p,&ret);
+                 if(t == 0)
+                   printf("Lista vazia\n" );
+                   else if(ret != '(');
+                   printf("%c\n", ret);
+             }while(item !='(');
+         }
+       }while(item != '\0');
 }
-int Prioridade(char c, char t){
+
+int prioridade(char c, char t){
   int pc,pt;
 
   if(c == '^')
