@@ -120,7 +120,7 @@ int main ()
  char Infixa_Posfixa(char dado[], Pilha **p){
       char item ;
       int t;
-      char ret;
+      char ret,a;
       int controle=1;
       int i=0;
       push(p,'(');
@@ -146,8 +146,7 @@ int main ()
 
       }else if(item == '+' || item == '-' ||  item == '*' || item == '/' ||  item == '^' )
       {
-      while(controle)
-      {
+        do{
           t = pop(p,&ret);
 
           if(t == 0 )
@@ -161,17 +160,17 @@ int main ()
 
               push(p,ret);
               push(p,item);
-              printf("%c\n",ret );
-              printf("%c\n",item);
               break;
             }
-        if(Prioridade(item,ret)){
-              printf("%s\n",ret);
+
 
             }
 
-          }
-        }
+
+        }while(1);
+      }else{
+        pop(p,&a);
+        printf("%c",a );
       }
 
 
