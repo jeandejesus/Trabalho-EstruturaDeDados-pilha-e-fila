@@ -27,7 +27,7 @@ return p;
 }
 
 
-void push(Nodo **N, int ip , int prioridade) {
+void insere_fim(Nodo **N, int ip , int prioridade) {
   Nodo *novo, * aux, * aux2;
   novo = Cria_Nodo( );
   novo->ip = ip;
@@ -44,7 +44,7 @@ void push(Nodo **N, int ip , int prioridade) {
 }
 
 
-int pop(Nodo **N,int *ip, int *prioridade) {
+int remove_inicio(Nodo **N,int *ip, int *prioridade) {
   Nodo *aux;
   if(*N == NULL) //verifica se a lista está vazia
     return 0;
@@ -120,7 +120,7 @@ int main(){
 
   imprime_lista_ecandeada(FilaEntrada);
 
-  while ( pop(&FilaEntrada,&identficacao,&p) != 0) {
+  while ( remove_inicio(&FilaEntrada,&identficacao,&p) != 0) {
     if (p ==1 ) {
       push(&Fila0,identficacao,p);
 
