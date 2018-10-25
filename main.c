@@ -41,8 +41,8 @@ int pop(Pilha **N, char *dado) {
       aux = (*N)->prox;
       free(*N);
       *N = aux;
+      return 1;
     }
-  return 1;
 }
 
 void imprime_lista_ecandeada(Pilha *N) {
@@ -163,16 +163,17 @@ int main ()
               break;
             }
 
-
-            }
+              }
 
 
         }while(1);
-      }else{
-        pop(p,&a);
-        printf("%c",a );
-      }
-
+      }else {
+            t = pop(p,&ret);
+          do {
+              printf("%c",ret );
+              break;
+            }while (1)
+          }
 
     }while(item != '\0');
 }
