@@ -133,50 +133,40 @@ int main ()
             printf("%c", item);
         }
       else if(item == '(')
+          {
             push(p,'(');
-      else if(item == ')' || '\0')
+          }
+      else if(item == ')' || item == '\0')
       {
         do{
           t = pop(p,&ret);
-            if(t == 0)
-              printf("Lista vazia\n" );
-              else if(ret != '(');
-              printf("%c\n", ret);
-          }while(item !='(');
+          if(ret != '(')
+            {
+              printf("%c", ret);
+
+            }
+          }while(ret !='(');
 
       }else if(item == '+' || item == '-' ||  item == '*' || item == '/' ||  item == '^' )
       {
-        do{
+        int fim = 0;
+        do {
           t = pop(p,&ret);
-
-          if(t == 0 )
-          {
-            printf("Lista vazia");
-            controle =0;
-          }else
-          {
           if(Prioridade(item,ret))
             {
-
               push(p,ret);
               push(p,item);
-              break;
-            }
-
-              }
-
-
-        }while(1);
-      }else {
-            t = pop(p,&ret);
-          do {
+              fim =1;
+            }else {
               printf("%c",ret );
-              break;
-            }while (1)
-          }
-
+      
+            }
+          }while (!fim);
+      }
     }while(item != '\0');
+    printf("\n" );
 }
+
 
 char Infixa_Prefixa(char dado[], Pilha **p){
      char item ;

@@ -79,7 +79,7 @@ void imprime_lista_ecandeada(Nodo *N) {
 
   Nodo *aux;
   if(N == NULL)
-    printf("\n A lista está vazia!!");
+    printf("\n NÃO HÁ ARQUIVOS ");
   else {
 
     for(aux = N; aux != NULL; aux = aux->prox)
@@ -98,7 +98,7 @@ int main(){
   int  ip;
   int ret=0;
   int identficacao;
-  int p ;
+  int p,dis=0;
   inicializa_lista(&FilaEntrada);
   inicializa_lista(&Fila0);
   inicializa_lista(&Fila1);
@@ -131,14 +131,21 @@ int main(){
     }
 
   }
-  printf("\nFILA 0 - Prioridade maxima \n" );
-  imprime_lista_ecandeada(Fila0);sleep(0.5);
-  printf("\nFILA 1 - Prioridade normal \n" );
 
-  imprime_lista_ecandeada(Fila1);sleep(0.5);
-  printf("\nFILA 2 - Prioridade baixa \n" );
+    printf("\nFILA 0 - Prioridade maxima \n" );
+    sleep(5);
+    imprime_lista_ecandeada(Fila0);
+    sleep(5);
+    printf("\nFILA 1 - Prioridade normal \n" );
+    sleep(5);
+    imprime_lista_ecandeada(Fila1);
+    printf("\nFILA 2 - Prioridade baixa \n" );
+    sleep(5);
+    imprime_lista_ecandeada(Fila2);
+    sleep(5);
+    printf("\nEntra :" );
+    imprime_lista_ecandeada(FilaEntrada);
 
-  imprime_lista_ecandeada(Fila2);sleep(0.5);
 
 
     fclose(file);
