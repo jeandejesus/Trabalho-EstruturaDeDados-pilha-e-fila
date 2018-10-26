@@ -27,7 +27,7 @@ return p;
 }
 
 
-void insere_fim(Nodo **N, int ip , int prioridade) {
+void push(Nodo **N, int ip , int prioridade) {
   Nodo *novo, * aux, * aux2;
   novo = Cria_Nodo( );
   novo->ip = ip;
@@ -44,7 +44,7 @@ void insere_fim(Nodo **N, int ip , int prioridade) {
 }
 
 
-int remove_inicio(Nodo **N,int *ip, int *prioridade) {
+int pop(Nodo **N,int *ip, int *prioridade) {
   Nodo *aux;
   if(*N == NULL) //verifica se a lista está vazia
     return 0;
@@ -120,7 +120,11 @@ int main(){
 
   imprime_lista_ecandeada(FilaEntrada);
 
-  while ( remove_inicio(&FilaEntrada,&identficacao,&p) != 0) {
+  while (  pop(&FilaEntrada,&identficacao,&p) != 0) {
+
+    for(int i=0 ; i<5 ; i++){
+    pop(&FilaEntrada,&identficacao,&p);sleep(5);
+
     if (p ==1 ) {
       push(&Fila0,identficacao,p);
 
@@ -128,21 +132,23 @@ int main(){
       push(&Fila1,identficacao,p);
     }else if(p==3){
       push(&Fila2,identficacao,p);
-    }
 
+
+          printf("\n-FILA 0 - Prioridade maxima \n" );
+
+          imprime_lista_ecandeada(Fila0);
+
+          printf("\nFILA 1 - Prioridade normal \n" );
+
+          imprime_lista_ecandeada(Fila1);
+          printf("\nFILA 2 - Prioridade baixa \n" );
+
+          imprime_lista_ecandeada(Fila2);
+    }
+  }
   }
 
-    printf("\nFILA 0 - Prioridade maxima \n" );
-    sleep(5);
-    imprime_lista_ecandeada(Fila0);
-    sleep(5);
-    printf("\nFILA 1 - Prioridade normal \n" );
-    sleep(5);
-    imprime_lista_ecandeada(Fila1);
-    printf("\nFILA 2 - Prioridade baixa \n" );
-    sleep(5);
-    imprime_lista_ecandeada(Fila2);
-    sleep(5);
+
     printf("\nEntra :" );
     imprime_lista_ecandeada(FilaEntrada);
 
