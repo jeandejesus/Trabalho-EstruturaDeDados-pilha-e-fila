@@ -1,21 +1,26 @@
+
+// Inclusão das bibliotecas necessárias
 #include<stdio.h>
 #include<stdlib.h>
 #include <unistd.h>
+#include <time.h>
+
 // Definição da Estrutura Lista Linear Simplemente Encadeada
-  typedef struct Bloco
+typedef struct Bloco
 {
-int prioridade;
-int ip;
-struct Bloco *prox;
+  int prioridade;
+  int ip;
+  struct Bloco *prox;
 } Nodo;
 
-void inicializa_lista(Nodo **N)//inicializa a lista
+// Inicializa a lista
+void inicializa_lista(Nodo **N)
 {
-*N = NULL;
+  *N = NULL;
 }
 
-
-Nodo * Cria_Nodo() //aloca memória para o nodo
+// Aloca memória para o nodo
+Nodo * Cria_Nodo()
 {
   Nodo *p;
   p = (Nodo *) malloc(sizeof(Nodo));
@@ -26,8 +31,8 @@ Nodo * Cria_Nodo() //aloca memória para o nodo
 return p;
 }
 
-
-void push(Nodo **N, int ip , int prioridade) {
+// Função que insere no fim da fila
+void insere_fim(Nodo **N, int ip , int prioridade) {
   Nodo *novo, * aux, * aux2;
   novo = Cria_Nodo( );
   novo->ip = ip;
@@ -43,8 +48,8 @@ void push(Nodo **N, int ip , int prioridade) {
         }
 }
 
-
-int pop(Nodo **N,int *ip, int *prioridade) {
+// Remove do fim da fila
+int remove_inicio(Nodo **N,int *ip, int *prioridade) {
   Nodo *aux;
   if(*N == NULL) //verifica se a lista está vazia
     return 0;
@@ -59,6 +64,7 @@ int pop(Nodo **N,int *ip, int *prioridade) {
   return 1;
 }
 
+// Função que busca na lista
 int busca_lista(Nodo **N, char *ip ,int *prioridade){
   Nodo *aux;
   if (*N == NULL) {
@@ -75,85 +81,129 @@ int busca_lista(Nodo **N, char *ip ,int *prioridade){
      return 0;
   }
 }
-void imprime_lista_ecandeada(Nodo *N) {
+
+// Função que imprima a lista
+void imprime_fila(Nodo *N) {
 
   Nodo *aux;
   if(N == NULL)
-    printf("\n NÃO HÁ ARQUIVOS ");
+    printf("\n\t NÃO HÁ ARQUIVOS ");
   else {
-
-    for(aux = N; aux != NULL; aux = aux->prox)
-
-      printf("\n  prioridade %d ip : %d",aux->prioridade, aux->ip);
-
+    for(aux = N; aux != NULL; aux = aux->prox){
+      printf("\n\t  prioridade %d ip : %d",aux->prioridade, aux->ip);
     }
+  }
 }
 
-
-int main(){
-  Nodo *FilaEntrada,*Fila0,*Fila1,*Fila2;
-  int valor;
+void menu();
+void distribuir(Nodo **FilaEntrada);
+void limpalista(Nodo **lista);
+int main()
+{
+  Nodo *FilaEntrada;
   FILE *file;
   int prioridade;
-  int  ip;
-  int ret=0;
-  int identficacao;
-  int p,dis=0;
+  int ip, totSolicitacoes=0;
+  char ch;
   inicializa_lista(&FilaEntrada);
-  inicializa_lista(&Fila0);
-  inicializa_lista(&Fila1);
-  inicializa_lista(&Fila2);
-
+  menu();
   file = fopen("Entrada.txt","r");
   if(file == NULL)
   {
     printf("Arquivo não pode ser aberto\n" );
     system("pause");
-    return 0 ;
+    return 0;
   }else{
-    while( (fscanf(file,"%d %d ", &prioridade, &ip))!=EOF ){
-        printf("prioridade : %d ,ip :  %d\n", prioridade , ip);
-        push(&FilaEntrada,ip,prioridade);
+        while( (ch=fgetc(file))!= EOF ){
+        if(ch == '\n')
+        totSolicitacoes++;
       }
-  printf("aberto com sucesso\n");
+
+      if (totSolicitacoes >=50) {
+        rewind(file);
+        while( (fscanf(file,"%d %d ", &prioridade, &ip))!=EOF )
+        {
+          printf("\tprioridade : %d ,ip :  %d\n", prioridade , ip);
+          insere_fim(&FilaEntrada,ip,prioridade);
+        }
+        printf("\tPreparando fila de impressão..\n");
+        distribuir(&FilaEntrada);
+        printf("\n\t lista de Entrada :" );
+        imprime_fila(FilaEntrada);
+        fclose(file);
+        limpalista(&FilaEntrada);
+      } else if (totSolicitacoes < 50){
+        printf("\tO arquivo precisa de no mínimo 50 solitações para realizar a impressão!\n");
+      }
+  }
 }
 
-  imprime_lista_ecandeada(FilaEntrada);
+void menu() {
+  printf("\t----------------\n");
+  printf("\t IMPRESSORA\n");
+  printf("\t----------------\n");
+}
+// Função que distribui da fila principal para as filas de prioridade
+void distribuir(Nodo **FilaEntrada) {
 
-  while (  pop(&FilaEntrada,&identficacao,&p) != 0) {
+  int identificacao,p,x,i=0,j=0;
+  Nodo *Fila1,*Fila2,*Fila3;
+  inicializa_lista(&Fila1);
+  inicializa_lista(&Fila2);
+  inicializa_lista(&Fila3);
+  while (*FilaEntrada != NULL ) {
 
-    for(int i=0 ; i<5 ; i++){
-    pop(&FilaEntrada,&identficacao,&p);sleep(5);
-
-    if (p ==1 ) {
-      push(&Fila0,identficacao,p);
-
-    }else if(p==2){
-      push(&Fila1,identficacao,p);
-    }else if(p==3){
-      push(&Fila2,identficacao,p);
-
-
-          printf("\n-FILA 0 - Prioridade maxima \n" );
-
-          imprime_lista_ecandeada(Fila0);
-
-          printf("\nFILA 1 - Prioridade normal \n" );
-
-          imprime_lista_ecandeada(Fila1);
-          printf("\nFILA 2 - Prioridade baixa \n" );
-
-          imprime_lista_ecandeada(Fila2);
+    for(i=0;i<5;i++){
+        if (*FilaEntrada == NULL) {
+          break;
+        }else{
+          remove_inicio(FilaEntrada,&identificacao,&p);
+          sleep(1);
+          /*
+           Se prioridade foi 1- Insere na fila 0
+           Se prioridade foi 2- Insere na fila 1
+           Se prioridade foi 3- Insere na fila 2
+           */
+          if (p ==1 ) {
+            insere_fim(&Fila1,identificacao,p);
+          }else if(p==2){
+            insere_fim(&Fila2,identificacao,p);
+          }else if(p==3){
+            insere_fim(&Fila3,identificacao,p);
+          }
+          j++;
+        }
     }
+
+    printf("\n\n\n\t [ FILA DE IMPRESSÃO ]  \n\n\n  " );
+    printf("\n\n\tFILA 1 - Prioridade máxima \n" );
+    imprime_fila(Fila1);
+    printf("\n\n\tFILA 2 - Prioridade normal \n\n" );
+    imprime_fila(Fila2);
+    printf("\n\n\tFILA 3 - Prioridade baixa \n\n" );
+    imprime_fila(Fila3);
+    printf("\n\n\t---------------------------- \n\n  " );
+    printf("\n\n\t Quantidade em espera = %d\n",j );
   }
-  }
+    printf("\t FIM\n" );
+}
 
-
-    printf("\nEntra :" );
-    imprime_lista_ecandeada(FilaEntrada);
-
-
-
-    fclose(file);
-    free(FilaEntrada);
+// Função que vai em cada nó e libera a memória alocada
+void limpalista(Nodo **lista)
+{
+	Nodo *p;
+  printf("\n\t---Liberando lista-----");
+	if(*lista == NULL)
+	{
+		printf("\n\tLista Vazia\n");
+	}
+	else
+	{
+		while(*lista!=NULL)
+		{
+			p = *lista;
+			*lista = (*lista)->prox;
+			free(p);
+		}
+	}
 }
