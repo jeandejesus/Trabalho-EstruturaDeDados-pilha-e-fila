@@ -1,17 +1,31 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include<math.h>
+
 // Definição da Estrutura Lista Linear Simplemente Encadeada
 typedef struct Bloco
 {
 char dado;
 struct Bloco *prox;
-}  Pilha;
+} Pilha;
+
+typedef struct BlocoNumero
+{
+float num;
+struct BlocoNumero *prox;
+} PilhaNumero;
+
 
 void inicializa_lista(Pilha **topo)//inicializa a lista
 {
-*topo = NULL;
+    *topo = NULL;
 }
-
+void inicializa_lista_numero(PilhaNumero **topo)//inicializa a lista
+{
+    *topo = NULL;
+}
 
 Pilha * Cria_Pilha() //aloca memória para o Pilha
 {
@@ -23,13 +37,25 @@ Pilha * Cria_Pilha() //aloca memória para o Pilha
   }
 return p;
 }
+Pilha * Cria_Pilha_numero() //aloca memória para o Pilha
+{
+  PilhaNumero *p;
+  p = (PilhaNumero *) malloc(sizeof(PilhaNumero));
+  if(!p) {
+    printf("Problema de alocação");
+    exit(0);
+  }
+return p;
+}
 
 void push(Pilha **N, char dado) {
+
   Pilha *novo;
   novo = Cria_Pilha();
   novo->dado = dado;
   novo->prox = *N;
   *N = novo;
+
 }
 
 int pop(Pilha **N, char *dado) {
@@ -45,61 +71,146 @@ int pop(Pilha **N, char *dado) {
     }
 }
 
+void pushN(PilhaNumero **N, float num) {
+   // printf(" %f",dado);
+  PilhaNumero *novoN;
+  novoN = Cria_Pilha_numero();
+  novoN->num = num;
+  novoN->prox = *N;
+  *N = novoN;
+
+}
+
+int popN(PilhaNumero **N, float *num) {
+  PilhaNumero *auxN;
+  if(*N == NULL) //verifica se a lista está vazia
+    return 0;
+    else {
+      *num = (*N)->num;
+      auxN = (*N)->prox;
+      free(*N);
+      *N = auxN;
+      return 1;
+    }
+}
+
 void imprime_lista_ecandeada(Pilha *N) {
-  printf("entrei na função imprime_lista_ecandeada\n" );
   Pilha *aux;
   if(N == NULL)
     printf("\n A lista está vazia!!");
   else {
     for(aux = N; aux != NULL; aux = aux->prox)
+    {
       printf("\n fila : %c ", aux->dado);
+    }
+    }
+}
+void imprime_lista_numero(PilhaNumero *N) {
+  PilhaNumero *aux;
+  if(N == NULL)
+    printf("\n A lista está vazia!!");
+  else {
+    for(aux = N; aux != NULL; aux = aux->prox)
+    {
+      printf(" : %f ", aux->num);
+    }
     }
 }
 
-void calcular(char dado[],Pilha **p);
+int validaExpressao(char op[], Pilha *p){
+   int valida = 1;
+    int i = 0;
+    char c;
+
+    while( (op[i] != '\0') && (valida != 0) ){
+
+        if((op[i] == '(') || (op[i] == '[') || (op[i] == '{'))
+            push(&p,op[i]);
+
+        if((op[i] == ')') || (op[i] == ']') || (op[i] == '}')){
+            if( p->prox==NULL )
+                valida = 0;
+            else{
+                 (char) pop(p,&c);
+
+                switch(op[i]){
+                    case ')':
+                        if( c != '(' )
+                            valida = 0;
+                        break;
+                    case ']':
+                        if( c != '[' )
+                            valida = 0;
+                        break;
+                    case '}':
+                        if( c != '{' )
+                            valida = 0;
+                        break;
+                }
+            }
+        }
+        i++;
+    }
+
+    if(p->prox==NULL && valida == 1)
+        return 1;
+    else
+        return 0;
+}
+
+
+int isMatchingPair(char character1, char character2);
+int validarEXpressao(char exp[],Pilha **stack);
+void calcular(char dado[]);
 char Infixa_Prefixa(char dado[], Pilha **p);
-char Infixa_Posfixa(char dado[], Pilha **p);
+char Infixa_Posfixa(char dado[], Pilha **p,char posf[]);
 void menuop();
 int Prioridade(char c, char t);
 int main ()
 {
-     Pilha *Lista;
+      Pilha *Lista;
      int menu,n=0;
-     char op[40];
+     char op[40],posf[40],result[14];
      inicializa_lista(&Lista);
-     int i=0;
-     char caractere;
+     int i=0,valida=0;
+     float item[40];
         printf("entre com expressão");
-        do{
-            setbuf(stdin,NULL);
-            caractere = getchar();
-            op[i]= caractere;
-            i++;
-        }while(caractere != '\n');
-
+        setbuf(stdin,NULL);
+        scanf("%s",op);
+        fflush(stdin);
+        printf("%s",op);
      do
      {
          menuop();// apenas mostrar as opções
          setbuf(stdin,NULL);
          scanf("%d", &menu);
+         fflush(stdin);
 
 
         switch(menu)
         {
               case 1:
 
-              Infixa_Posfixa(op,&Lista);
-
+               Infixa_Posfixa(op,&Lista,posf);
+                printf("resultado : %s",posf);
               break;
               case 2 :
-              Infixa_Prefixa(op,&Lista);
-
+                Infixa_Prefixa(op,&Lista);
               break;
               case 3 :
-
-              break;
+               valida = validarExpressao(op,&Lista);
+               if(valida == 1 && strlen(op) > 2)
+                    printf("Essa expressão é valida %d\n",valida);
+                else
+                    printf("Essa expressão é invalida %d\n",valida);
+                break;
               case 4:
-                calcular(op,&Lista);
+                valida = validarExpressao(op);
+                if(valida == 1){
+                Infixa_Posfixa(op,&Lista,posf);
+                calcular(posf);
+                }else
+                printf("Essa expressão é invalida %d\n",valida);
               break;
               case 5 :
                 return(0);
@@ -107,7 +218,7 @@ int main ()
          }
     }while(menu != 5);
     return 1;
-    free(Lista);
+   free(Lista);
  }
 
  void menuop(){
@@ -118,23 +229,27 @@ int main ()
    printf("\n5. Sair do Programa: ");
  }
 
- char Infixa_Posfixa(char dado[], Pilha **p){
-      char item ;
+
+char   Infixa_Posfixa(char dado[], Pilha **p,char posf[]){
+       char item ;
       int t;
-      char ret,a;
-      int controle=1;
-      int i=0;
+      char ret,result[40];
+      int aux=1;
+      int i=0,j=1;
       push(p,'(');
+      fflush(stdin);
        do
        {
         item = dado[i];
         i++;
-       if(item >= 'a' && item <= 'z')
+       if(item >= 47 && item <= 58)
        {
-            printf("%c", item);
+            posf[j++]=item;
+
         }
-      else if(item == '(')
+       else if(item == '(')
           {
+           posf[j++] = item;
             push(p,'(');
           }
       else if(item == ')' || item == '\0')
@@ -143,81 +258,92 @@ int main ()
           t = pop(p,&ret);
           if(ret != '(')
             {
-              printf("%c", ret);
+              posf[j++] = ret;
+              posf[j++]=' ';
 
             }
           }while(ret !='(');
 
       }else if(item == '+' || item == '-' ||  item == '*' || item == '/' ||  item == '^' )
       {
+        posf[j++]=' ';
         int fim = 0;
         do {
+
           t = pop(p,&ret);
           if(Prioridade(item,ret))
             {
+
               push(p,ret);
               push(p,item);
-              fim =1;
+
+             fim = 1;
+
             }else {
-              printf("%c",ret );
+
+
+              posf[j++] = ret;
 
             }
+
+
           }while (!fim);
       }
+
+
     }while(item != '\0');
-    printf("\n" );
+    posf[j++]='\0';
+
 }
 
-char Infixa_Prefixa(char dado[], Pilha **p){
-  char item ;
-  int t;
-  char ret,a;
-  int controle=1;
-  int i=0;
-  push(p,'(');
-   do
-   {
-    item = dado[i];
-    i++;
-    if(item == '+' || item == '-' ||  item == '*' || item == '/' ||  item == '^' )
-    {
-      int fim = 0;
-      do {
-        t = pop(p,&ret);
-        if(Prioridade(item,ret))
-          {
-            push(p,ret);
-            push(p,item);
-            fim =1;
-          }else {
-            printf("%c",ret );
 
-          }
-        }while (!fim);
-    }
-   else if(item >= 'a' && item <= 'z')
-   {
-        printf("%c", item);
-    }
-  else if(item == '(')
-      {
-        push(p,'(');
-      }
-  else if(item == ')' || item == '\0')
-  {
-    do{
-      t = pop(p,&ret);
-      if(ret != '(')
-        {
-          printf("%c", ret);
+ reverte(char dado[], Pilha **p, char auxiliar[]){
 
+  int size=strlen(dado)-1;    //strlen calcula a quantidade de caracteres que tem a string
+  int a=0;
+
+    for(a=0;dado[a]!='\0';a++){        //Repete enquanto nao chegar ao final da string
+         auxiliar[size]=dado[a];
+
+         size--;
+    }
+    auxiliar[a++]='\0';//Se nao colocar essa parte, o programa pode mostrar LIXO
+}
+
+
+char  Infixa_Prefixa(char dado[], Pilha **p){
+
+      char reversa[40],pre[40],rev[40],resultado[40],str[40];
+      int j=0,i=0;
+      sscanf(&dado[i], "%s", &rev[i]);
+
+      reverte(rev,p,reversa);
+
+      for (int i = 0; i < strlen(reversa)-1; i++) {
+
+        if (reversa[i] == '(') {
+            reversa[i] = ')';
+            i++;
         }
-      }while(ret !='(');
+        else if (reversa[i] == ')') {
+                reversa[i] = '(';
+                i++;
+        }
 
-  }
-}while(item != '\0');
-printf("\n" );
+      }
+      Infixa_Posfixa(reversa,p,pre);
+      int x=1;
+      do{
+        str[j++]=pre[x];
+        x++;
+      }while(pre[x]!='\0');
+      str[j++]='\0';
+    reverte(str,p,resultado);
+    printf("RESULTADO");
+    printf(" [%s]\n",resultado);
+
 }
+
 int Prioridade(char c, char t){
   int pc,pt;
 
@@ -242,64 +368,113 @@ int Prioridade(char c, char t){
   return (pc > pt);
 }
 
-void calcular(char dado[],Pilha **p){
-  printf("entrei no calclulara\n");
-  char op1, op2;
-  float a,b,operacao;
-  int i=0,c=0;
 
-/*  while (item != '\0'){
-    item = dado[i];
-   push(p,item);
-   printf("valor %c\n", dado[i]);
-   i++;
- }*/
+void calcular(char dado[])
+{
+    PilhaNumero *pn;
+    inicializa_lista_numero(&pn);
+    int i=1,j=0,x=0;
+    float a=0,b=0,item=0,numero=0 ;
+    char conv,caractere[50],maior[50];
 
-while (c<i) {
-  printf("%d\n",c );
-  switch(c){
-    printf("entrei no case\n");
-              case '+':
-                   pop(p,&op1);
-                   pop(p,&op2);
-                   a= atof(&op1);
-                   b= atof(&op2);
-                   printf("%f a + %f \n",a,b );
-                char soma[4] ;
-                operacao= a+b;
-                  sprintf(soma, "%.3f", operacao);
-                  printf("%s\n",soma );
-                //  push(p,soma);
-                  break;
-              case '-':
-                  pop(p,&op1);
-                  pop(p,&op2);
-                  a= atof(&op1);
-                  b= atof(&op2);
-                  char sub = a-b;
-                  push(p,sub);
-                  break;
-              case '*':
-                  pop(p,&op1);
-                  pop(p,&op2);
-                  a= atof(&op1);
-                  b= atof(&op2);
-                  char multiplicacao = a*b;
-                  push(p, multiplicacao);
-                  break;
-              case '/':
-                  pop(p,&op1);
-                  pop(p,&op2);
-                  a= atof(&op1);
-                  b= atof(&op2);
-                  char divisao = a/b;
-                  push(p, divisao);
-                  break;
-          }
-          c++;
+
+    do{
+        if(dado[i] == '+'){
+                popN(&pn,&a);
+                popN(&pn,&b);
+                printf("\n soma %f + %f  = %f \n",a,b,(a+b));
+                pushN(&pn,a+b);
+
+        }else if( dado[i] == '-'){
+                popN(&pn,&a);
+                popN(&pn,&b);
+                printf("\n subitração %f - %f  = %f \n",b,a,(b-a));
+                pushN(&pn,b-a);
         }
-      double resultado;
+        else if( dado[i] == '*'){
+                popN(&pn,&a);
+                popN(&pn,&b);
+                printf("\n multiplicação %f * %f  = %f \n",a,b,(a*b));
+                pushN(&pn,a*b);
+        } else if( dado[i] == '/'){
+                popN(&pn,&a);
+                popN(&pn,&b);
+                printf("\n divisao %f / %f  = %f \n",a,b,(a/b));
+                pushN(&pn,a/b);
 
-      resultado = atof(&op1);
-      pop(p,&resultado);
+        }else if( dado[i] == '^'){
+                popN(&pn,&a);
+                popN(&pn,&b);
+                printf("\n exponenciação %f ^ %f  = %f \n",a,b,(pow(a,b)));
+                pushN(&pn,pow(a,b));
+        }
+        else if(dado[i] >= '0' && dado[i] <= '9' ) {
+            sscanf(&dado[i], "%f", & numero);
+            while(dado[i] >= '0' && dado[i] <= '9')
+                i++;
+            i--;
+            pushN(&pn,numero);
+        }
+
+        i++;
+
+    }while(dado[i]!= '\0');
+
+       printf("\n o resultado da expressão é :");
+       imprime_lista_numero(pn);
+
+
 }
+
+
+int isMatchingPair(char character1, char character2)
+{
+   if(character1 == '(' && character2 == ')')
+     return 1;
+   else if(character1 == '{' && character2 == '}')
+     return 1;
+   else if(character1 == '[' && character2 == ']')
+     return 1;
+   else
+     return 0;
+}
+
+ int validarExpressao(char exp[],Pilha **stack)
+{  int i = 0;
+   //struct Pilha *stack = NULL;
+
+   while(exp[i])
+   {
+
+      if(exp[strlen(exp)-1] == '+' || exp[strlen(exp)-1]=='-' || exp[strlen(exp)-1]=='*' || exp[strlen(exp)-1]=='/' || exp[strlen(exp)-1]=='^')
+        return 0;
+
+      if(exp[i] == '{' || exp[i] == '(' || exp[i] == '[')
+        push(&stack, exp[i]);
+
+
+      if(exp[i] == '{' || exp[i] == '(' || exp[i] == '[' || exp[i]=='+' || exp[i]=='-' || exp[i]=='*' || exp[i]=='/' || exp[i]=='^'){
+
+        if (exp[i+1] == '}' || exp[i+1] == ')' || exp[i+1] == ']' || exp[i+1]=='+' || exp[i+1]=='-' || exp[i+1]=='*' || exp[i+1]=='/' || exp[i+1]=='^')
+         return 0;
+      }
+
+      if(exp[i] == '}' || exp[i] == ')' || exp[i] == ']')
+      {
+         if(stack == NULL)
+           return 0;
+
+         else if ( !isMatchingPair(pop(&stack,exp[i]), exp[i]) )
+           return 0;
+      }
+      i++;
+   }
+
+
+   if(stack == NULL)
+     return 1; /*balanced*/
+   else
+     return 0;  /*not balanced*/
+}
+
+
